@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct SignInEmailView: View {
-    @StateObject private var viewModel: SignInEmailModel = SignInEmailModel()
-    
+    @StateObject private var viewModel: SignInEmailViewModel = SignInEmailViewModel()
+    @Binding var showSignInView: Bool
     var body: some View {
         VStack{
             TextField("Email...", text: $viewModel.email)
@@ -21,8 +21,25 @@ struct SignInEmailView: View {
                 .padding()
                 .background(Color.gray.opacity(0.4))
                 .cornerRadius(10)
+            
+            // next section could also be 2 buttons or using each of them depending on the view
             Button{
-                viewModel.signIn()
+                Task{
+                    do {
+                        try await viewModel.signUp()
+                        showSignInView = false
+                        return
+                    } catch {
+                        print(error.localizedDescription)
+                    }
+                    // if the preview "do" fails
+                    do {
+                        try await viewModel.signIn()
+                        showSignInView = false
+                    } catch {
+                        print(error.localizedDescription)
+                    }
+                }
             } label: {
                 Text("Sign In")
                     .font(.headline)
@@ -40,6 +57,6 @@ struct SignInEmailView: View {
 
 #Preview {
     NavigationStack{
-        SignInEmailView()
+        SignInEmailView(showSignInView: .constant(false))
     }
 }
