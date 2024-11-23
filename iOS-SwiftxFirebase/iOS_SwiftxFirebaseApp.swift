@@ -14,7 +14,9 @@ struct iOS_SwiftxFirebaseApp: App {
    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationStack{
+                AuthView()                
+            }
         }
     }
 }
