@@ -13,9 +13,9 @@ struct AuthDataResultModel {
     let email: String?
     let photoUrl: String?
     
-    init(user: User){
-        self.uid = user.uid
-        self.email = user.email
-        self.photoUrl = user.photoURL?.absoluteString
-    }
+//    init(user: User){
+//        self.uid = user.uid
+//        self.email = user.email
+//        self.photoUrl = user.photoURL?.absoluteString
+//    }
 }

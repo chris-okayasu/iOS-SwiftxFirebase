@@ -23,21 +23,21 @@ struct SignInEmailView: View {
                 .cornerRadius(10)
             
             // next section could also be 2 buttons or using each of them depending on the view
-            Button{
-                Task{
+            Button {
+                Task {
                     do {
+                        // Try to sign up first
                         try await viewModel.signUp()
                         showSignInView = false
-                        return
                     } catch {
-                        print(error.localizedDescription)
-                    }
-                    // if the preview "do" fails
-                    do {
-                        try await viewModel.signIn()
-                        showSignInView = false
-                    } catch {
-                        print(error.localizedDescription)
+                        // If sign up fails, try to sign in
+                        do {
+                            try await viewModel.signIn()
+                            showSignInView = false
+                        } catch {
+                            // Handle sign-in errors
+                            print("Error: \(error.localizedDescription)")
+                        }
                     }
                 }
             } label: {
@@ -49,6 +49,7 @@ struct SignInEmailView: View {
                     .background(Color.blue)
                     .cornerRadius(10)
             }
+
         }
         .padding()
         .navigationTitle("Sign In with Email")
