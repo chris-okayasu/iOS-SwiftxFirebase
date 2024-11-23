@@ -14,6 +14,9 @@ struct SettingsView: View {
     
     var body: some View {
         List{
+            
+            emailSection
+            
             Button("Logout"){
                 Task{
                     do {
@@ -24,7 +27,14 @@ struct SettingsView: View {
                     }
                 }
             }
-            
+        }
+        .navigationTitle("Settings")
+    }
+}
+
+extension SettingsView {
+    private var emailSection: some View {
+        Section{
             Button("Reset password"){
                 Task{
                     do {
@@ -36,10 +46,11 @@ struct SettingsView: View {
                 }
             }
             
+            // obviouly these 2 should be a fields and validations...
             Button("Update Email"){
                 Task{
                     do {
-                        try await viewModel.emailVerification()
+                        try await viewModel.updateEmail(email: "chris@example.com")
                         print("Email updated!!!")
                     } catch{
                         print(error.localizedDescription)
@@ -50,16 +61,16 @@ struct SettingsView: View {
             Button("Update Password"){
                 Task{
                     do {
-                        try await viewModel.updatePassword(password: "password123" ) // obviouly this should be a security field and validations...
+                        try await viewModel.updatePassword(password: "password123" )
                         print("Password updated!!!")
                     } catch{
                         print(error.localizedDescription)
                     }
                 }
             }
-            
+        }header:{
+            Text("Email Functions")
         }
-        .navigationTitle("Settings")
     }
 }
 

@@ -26,8 +26,9 @@ final class SettingsViewModel: ObservableObject {
         let password = "password123"
         try await AuthenticationManager.shared.updatePassword(password: password)
     }
-    func emailVerification() async throws {
-        try await AuthenticationManager.shared.emailVerification()
+    func updateEmail(email: String) async throws {
+        let email = "chris@example.com"
+        try await AuthenticationManager.shared.updateEmail(email: email)
     }
     
 }

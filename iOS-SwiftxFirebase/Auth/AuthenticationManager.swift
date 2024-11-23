@@ -48,11 +48,11 @@ final class AuthenticationManager {
         
     }
     
-    func emailVerification() async throws {
+    func updateEmail(email: String) async throws {
         guard let user = Auth.auth().currentUser else {
             throw URLError(.badServerResponse)
         }
-        try await user.sendEmailVerification()
+        try await user.sendEmailVerification(beforeUpdatingEmail: email)
     }
     
     func signOut() throws {
