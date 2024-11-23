@@ -6,17 +6,28 @@
 //
 
 import SwiftUI
-
+// Root
 struct ContentView: View {
+    
+    @State private var showSignInView: Bool = false
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
+        ZStack{
+            NavigationStack{
+                Text("Setting")
             }
+        }
+        .onAppear{
+            //TODO: get the user one the app runs
+            let authUser = try? AuthenticationManager.shared.getAuthenticatedUser()
+            self.showSignInView = authUser == nil
+        }
+        .fullScreenCover(isPresented: $showSignInView){
+            NavigationStack{
+                AuthView()
+            }
+        }
+    }
 }
 
 #Preview {
