@@ -8,7 +8,7 @@
 import Foundation
 
 @MainActor
-final class SignInEmailViewModel: ObservableObject {
+final class SignInEmailViewModel: ObservableObject, SignInEmailViewModelProtocol {
     @Published var email: String = ""
         @Published var password: String = ""
         @Published var errorMessage: String? // To expose error messages to the UI

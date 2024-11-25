@@ -26,10 +26,28 @@ final class AuthenticationManager:AuthenticationServiceProtocol {
     
     static let shared = AuthenticationManager()
     
-    private init (){
+    private init (){}
+    
+    // Locally SDK (NOT async)
+    func getAuthenticatedUser() throws -> AuthDataResultModel {
+        guard let user = Auth.auth().currentUser else {
+            throw AuthenticationError.userNotFound        }
+        return AuthDataResultModel(
+            uid: user.uid,
+            email: user.email,
+            photoUrl: user.photoURL?.absoluteString
+        )
     }
     
-    // Login by Email and password Logic
+    func signOut() throws {
+        try Auth
+            .auth()
+            .signOut()
+    }
+}
+
+// MARK: SIGN IN EMAIL
+extension AuthenticationManager {
     @discardableResult
     func createUser(
         email: String,
@@ -62,19 +80,6 @@ final class AuthenticationManager:AuthenticationServiceProtocol {
             photoUrl: authDataResult.user.photoURL?.absoluteString
         )
     }
-    
-    // Locally SDK (NOT async)
-    func getAuthenticatedUser() throws -> AuthDataResultModel {
-        guard let user = Auth.auth().currentUser else {
-            throw AuthenticationError.userNotFound        }
-        // Convertir el objeto Firebase `User` al modelo desacoplado `AuthDataResultModel`
-        return AuthDataResultModel(
-            uid: user.uid,
-            email: user.email,
-            photoUrl: user.photoURL?.absoluteString
-        )
-    }
-    
     
     func resetPassword(
         email: String
@@ -114,10 +119,23 @@ final class AuthenticationManager:AuthenticationServiceProtocol {
                 beforeUpdatingEmail: email
             )
     }
+}
+
+// MARK: SIGN IN SSO
+extension AuthenticationManager {
     
-    func signOut() throws {
-        try Auth
-            .auth()
-            .signOut()
+    @discardableResult
+    func SignInWithGoogle(tokens: GoogleSignInResultModel) async throws -> AuthDataResultModel {
+        let credential = GoogleAuthProvider.credential(withIDToken: tokens.idToken, accessToken: tokens.accessToken)
+        return try await SignInWith(credential: credential)
+    }
+    
+    func SignInWith(credential: AuthCredential) async throws -> AuthDataResultModel {
+        let authDataResult = try await  Auth.auth().signIn(with: credential)
+        return AuthDataResultModel(
+            uid: authDataResult.user.uid,
+            email: authDataResult.user.email,
+            photoUrl: authDataResult.user.photoURL?.absoluteString
+        )
     }
 }

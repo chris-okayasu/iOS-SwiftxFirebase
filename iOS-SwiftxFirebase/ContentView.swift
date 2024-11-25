@@ -22,11 +22,11 @@ struct ContentView: View {
             let authUser = try? AuthenticationManager.shared.getAuthenticatedUser()
             self.showSignInView = authUser == nil
         }
-        .fullScreenCover(isPresented: $showSignInView){
-            NavigationStack{
-                AuthView(showSignInView: $showSignInView)
-            }
-        }
+        .fullScreenCover(isPresented: $showSignInView) {
+                    NavigationStack {
+                        AuthView(showSignInView: $showSignInView)
+                    }
+                }
     }
 }
 
