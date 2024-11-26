@@ -80,7 +80,8 @@ extension SettingsView {
 
     private var anonymousSection: some View {
         Section {
-            Button("Link Google Account") {
+            // Botón de Google con estilo
+            Button(action: {
                 Task {
                     do {
                         try await viewModel.linkGoogleAccount()
@@ -89,8 +90,27 @@ extension SettingsView {
                         print(error)
                     }
                 }
+            }) {
+                HStack {
+                    Image(systemName: "g.circle.fill") //TODO: Search real Google icon...
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                    Text("Link Google Account")
+                        .foregroundColor(.white)
+                        .bold()
+                }
+                .padding()
+                .font(.headline)
+                .frame(height: 55)
+                .frame(maxWidth: .infinity)
+                .foregroundColor(.white)
+                .background(Color.red)
+                .cornerRadius(10)
             }
-            Button("Link Apple Account") {
+
+            // Botón de Apple con estilo (logo blanco y fondo negro)
+            Button(action: {
                 Task {
                     do {
                         try await viewModel.linkAppleAccount()
@@ -99,8 +119,28 @@ extension SettingsView {
                         print(error)
                     }
                 }
+            }) {
+                HStack {
+                    Image(systemName: "applelogo") // Logo blanco de Apple
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(.white) // Aseguramos que el logo sea blanco
+                    Text("Link Apple Account")
+                        .foregroundColor(.white)
+                        .bold()
+                }
+                .padding()
+                .font(.headline)
+                .frame(height: 55)
+                .frame(maxWidth: .infinity)
+                .foregroundColor(.white)
+                .background(Color.black)
+                .cornerRadius(10)
             }
-            Button("Link Email Account") {
+            
+            // Botón de Email
+            Button(action: {
                 Task {
                     do {
                         try await viewModel.linkEmailAccount()
@@ -109,7 +149,25 @@ extension SettingsView {
                         print(error)
                     }
                 }
+            }) {
+                HStack {
+                    Image(systemName: "envelope.fill") // Icono de Email
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                    Text("Link Email Account")
+                        .foregroundColor(.white)
+                        .bold()
+                }
+                .padding()
+                .font(.headline)
+                .frame(height: 55)
+                .frame(maxWidth: .infinity)
+                .foregroundColor(.white)
+                .background(Color.blue)
+                .cornerRadius(10)
             }
+            
         } header: {
             Text("Create account")
         }
