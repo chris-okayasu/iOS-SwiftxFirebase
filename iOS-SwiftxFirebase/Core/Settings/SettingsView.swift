@@ -4,15 +4,22 @@
 //
 //  Created by chris on 2024/11/25.
 //
+
 import SwiftUI
 
 struct SettingsView: View {
-    
     @StateObject private var viewModel = SettingsViewModel()
     @Binding var showSignInView: Bool
+    @State private var showAlert = false
     
     var body: some View {
         List {
+            if viewModel.authProviders.contains(.email) {
+                emailSection
+            }
+            if viewModel.authUser?.isAnonymous == true {
+                anonymousSection
+            }
             Button("Log out") {
                 Task {
                     do {
@@ -23,28 +30,7 @@ struct SettingsView: View {
                     }
                 }
             }
-            
-            Button(role: .destructive) {
-                Task {
-                    do {
-                        try await viewModel.deleteAccount()
-                        showSignInView = true
-                    } catch {
-                        print(error)
-                    }
-                }
-            } label: {
-                Text("Delete account")
-            }
-
-            
-            if viewModel.authProviders.contains(.email) {
-                emailSection
-            }
-            
-            if viewModel.authUser?.isAnonymous == true {
-                anonymousSection
-            }
+            deleteAccountSection
         }
         .onAppear {
             viewModel.loadAuthProviders()
@@ -54,16 +40,7 @@ struct SettingsView: View {
     }
 }
 
-struct SettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationStack {
-            SettingsView(showSignInView: .constant(false))
-        }
-    }
-}
-
 extension SettingsView {
-    
     private var emailSection: some View {
         Section {
             Button("Reset password") {
@@ -76,7 +53,6 @@ extension SettingsView {
                     }
                 }
             }
-            
             Button("Update password") {
                 Task {
                     do {
@@ -87,7 +63,6 @@ extension SettingsView {
                     }
                 }
             }
-            
             Button("Update email") {
                 Task {
                     do {
@@ -102,7 +77,7 @@ extension SettingsView {
             Text("Email functions")
         }
     }
-    
+
     private var anonymousSection: some View {
         Section {
             Button("Link Google Account") {
@@ -115,7 +90,6 @@ extension SettingsView {
                     }
                 }
             }
-            
             Button("Link Apple Account") {
                 Task {
                     do {
@@ -126,7 +100,6 @@ extension SettingsView {
                     }
                 }
             }
-            
             Button("Link Email Account") {
                 Task {
                     do {
@@ -141,4 +114,35 @@ extension SettingsView {
             Text("Create account")
         }
     }
+
+    private var deleteAccountSection: some View {
+        Section {
+            Button(role: .destructive) {
+                showAlert = true
+            } label: {
+                Text("Delete account")
+            }
+            .alert("Are you sure?", isPresented: $showAlert) {
+                Button("Delete", role: .destructive) {
+                    Task {
+                        do {
+                            try await viewModel.deleteAccount()
+                            showSignInView = true
+                        } catch {
+                            print(error)
+                        }
+                    }
+                }
+                Button("Cancel", role: .cancel) {
+                    // just close alert
+                }
+            } message: {
+                Text("This action is permanent and cannot be undone.")
+            }
+        }
+    }
+}
+
+#Preview {
+    SettingsView(showSignInView: .constant(false))
 }
