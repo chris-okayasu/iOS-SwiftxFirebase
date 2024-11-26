@@ -40,12 +40,12 @@ final class SettingsViewModel: ObservableObject {
         
         try await AuthenticationManager.shared.resetPassword(email: email)
     }
-    
+    // This should be field and complete, since this is an example I am not completing this at least for now
     func updateEmail() async throws {
         let email = "hello123@gmail.com"
         try await AuthenticationManager.shared.updateEmail(email: email)
     }
-    
+    // This should be field and complete, since this is an example I am not completing this at least for now
     func updatePassword() async throws {
         let password = "Hello123!"
         try await AuthenticationManager.shared.updatePassword(password: password)
@@ -62,7 +62,7 @@ final class SettingsViewModel: ObservableObject {
         let tokens = try await helper.startSignInWithAppleFlow()
         self.authUser = try await AuthenticationManager.shared.linkApple(tokens: tokens)
     }
-    
+    // This should be field and complete, since this is an example I am not completing this at least for now
     func linkEmailAccount() async throws {
         let email = "anotherEmail@gmail.com"
         let password = "Hello123!"
