@@ -26,11 +26,12 @@ struct DBUser: Codable {
     let profileImagePath: String?
     let profileImagePathUrl: String?
 
-    init(auth: AuthDataResultModel) {
+    init(auth: AuthDataResultModel) { // Once a user login the system returns an AuthDataResultModel and then to getUser(id:String)
         self.userId = auth.uid
         self.isAnonymous = auth.isAnonymous
         self.email = auth.email
         self.photoUrl = auth.photoUrl
+        
         self.dateCreated = Date()
         self.isPremium = false
         self.preferences = nil
@@ -62,7 +63,7 @@ struct DBUser: Codable {
         self.profileImagePath = profileImagePath
         self.profileImagePathUrl = profileImagePathUrl
     }
-    
+    // Not needed anymore, now I am changing the status (bool) in ViewModel, I keep just as remainder... 
 //    func togglePremiumStatus() -> DBUser {
 //        let currentValue = isPremium ?? false
 //        return DBUser(
@@ -127,8 +128,11 @@ final class UserManager {
     static let shared = UserManager()
     private init() { }
     
+    // Get a collection of users
     private let userCollection: CollectionReference = Firestore.firestore().collection("users")
     
+    // Get user by Id
+    // I can use it anytime a need a query of my current user
     private func userDocument(userId: String) -> DocumentReference {
         userCollection.document(userId)
     }
@@ -141,6 +145,7 @@ final class UserManager {
         userFavoriteProductCollection(userId: userId).document(favoriteProductId)
     }
     
+    // custom encoder and decoder from and to match data swiftModel - Firestore
     private let encoder: Firestore.Encoder = {
         let encoder = Firestore.Encoder()
 //        encoder.keyEncodingStrategy = .convertToSnakeCase
@@ -158,7 +163,7 @@ final class UserManager {
     func createNewUser(user: DBUser) async throws {
         try userDocument(userId: user.userId).setData(from: user, merge: false)
     }
-    
+    // Not needed any more
 //    func createNewUser(auth: AuthDataResultModel) async throws {
 //        var userData: [String:Any] = [
 //            "user_id" : auth.uid,
@@ -179,6 +184,7 @@ final class UserManager {
         try await userDocument(userId: userId).getDocument(as: DBUser.self)
     }
     
+    // Not needed any more
 //    func getUser(userId: String) async throws -> DBUser {
 //        let snapshot = try await userDocument(userId: userId).getDocument()
 //
@@ -324,6 +330,7 @@ final class UserManager {
 //    }
     
 }
+
 import Combine
 
 struct UserFavoriteProduct: Codable {
