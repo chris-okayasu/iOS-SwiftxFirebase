@@ -36,6 +36,7 @@ struct SettingsView: View {
             viewModel.loadAuthProviders()
             viewModel.loadAuthUser()
         }
+        .background(Color("bg-main"))
         .navigationBarTitle("Settings")
     }
 }
@@ -167,7 +168,6 @@ extension SettingsView {
                 .background(Color.blue)
                 .cornerRadius(10)
             }
-            
         } header: {
             Text("Create account")
         }

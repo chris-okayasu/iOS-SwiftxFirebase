@@ -18,6 +18,7 @@ struct iOS_SwiftxFirebaseApp: App {
                 ContentView()
             }
         }
+        
     }
 }
 

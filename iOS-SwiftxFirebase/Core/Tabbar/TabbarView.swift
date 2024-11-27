@@ -10,11 +10,12 @@ import SwiftUI
 struct TabbarView: View {
     
     @Binding var showSignInView: Bool
-    
+
     var body: some View {
         TabView {
             NavigationStack {
-//                ProductsView()
+                // ProductsView()
+//                    .background(Color("bg-main").ignoresSafeArea())
             }
             .tabItem {
                 Image(systemName: "cart")
@@ -22,7 +23,8 @@ struct TabbarView: View {
             }
             
             NavigationStack {
-//                FavoriteView()
+                // FavoriteView()
+//                    .background(Color("bg-main").ignoresSafeArea())
             }
             .tabItem {
                 Image(systemName: "star.fill")
@@ -31,14 +33,18 @@ struct TabbarView: View {
             
             NavigationStack {
                 ProfileView(showSignInView: $showSignInView)
+                    .background(Color("bg-main").ignoresSafeArea())
             }
             .tabItem {
                 Image(systemName: "person")
                 Text("Profile")
             }
         }
+        .background(Color("bg-main").ignoresSafeArea()) // Aplicar el fondo aquí también
     }
 }
+
+
 #Preview {
     TabbarView(showSignInView: .constant(false))
 }

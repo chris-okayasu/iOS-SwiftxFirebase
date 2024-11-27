@@ -16,7 +16,6 @@ struct AuthenticationView: View {
     
     var body: some View {
         VStack {
-            
             Button(action: {
                 Task {
                     do {
@@ -79,6 +78,7 @@ struct AuthenticationView: View {
         }
         .padding()
         .navigationTitle("Sign In")
+        .background(Color("bg-main"))
     }
 }
 

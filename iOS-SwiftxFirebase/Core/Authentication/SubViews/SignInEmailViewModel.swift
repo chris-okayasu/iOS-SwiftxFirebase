@@ -29,7 +29,7 @@ final class SignInEmailViewModel: ObservableObject {
             print("No email or password found.")
             return
         }
-        
+        // We do not want to create a new accout for user that already exist, just sign in
         try await AuthenticationManager.shared.signInUser(email: email, password: password)
     }
 }

@@ -13,9 +13,13 @@ struct ContentView: View {
        var body: some View {
            ZStack {
                if !showSignInView {
-                   TabbarView(showSignInView: $showSignInView)
+                   NavigationStack{
+                       ProfileView(showSignInView: $showSignInView)                       
+//                       TabbarView(showSignInView: $showSignInView)                       
+                   }
                }
            }
+           
            .onAppear {
                let authUser = try? AuthenticationManager.shared.getAuthenticatedUser()
                self.showSignInView = authUser == nil
@@ -25,6 +29,8 @@ struct ContentView: View {
                    AuthenticationView(showSignInView: $showSignInView)
                }
            }
+//           .scrollContentBackground(.hidden)
+//           .background(Color("bg-main"))
        }
    }
 #Preview {
