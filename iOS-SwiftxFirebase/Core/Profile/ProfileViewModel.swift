@@ -48,7 +48,7 @@ final class ProfileViewModel: ObservableObject {
     
     func addFavoriteMovie() {
         guard let user else { return }
-        let movie = Movie(id: "1", title: "Avatar 2", isPopular: true)
+        let movie = Movie(id: "1", title: "Chihiro", isPopular: true)
         Task {
             try await UserManager.shared.addFavoriteMovie(userId: user.userId, movie: movie)
             self.user = try await UserManager.shared.getUser(userId: user.userId)

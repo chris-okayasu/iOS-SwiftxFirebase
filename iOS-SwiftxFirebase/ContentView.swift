@@ -14,8 +14,10 @@ struct ContentView: View {
            ZStack {
                if !showSignInView {
                    NavigationStack{
-                       ProfileView(showSignInView: $showSignInView)                       
-//                       TabbarView(showSignInView: $showSignInView)                       
+                       ProductsView()
+//                       ProfileView(showSignInView: $showSignInView)
+                       
+//                       TabbarView(showSignInView: $showSignInView)
                    }
                }
            }

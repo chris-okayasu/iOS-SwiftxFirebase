@@ -63,7 +63,7 @@ struct DBUser: Codable {
         self.profileImagePath = profileImagePath
         self.profileImagePathUrl = profileImagePathUrl
     }
-    // Not needed anymore, now I am changing the status (bool) in ViewModel, I keep just as remainder... 
+    // Not needed anymore, now I am changing the status (bool) in ViewModel, I keep just as remainder...
 //    func togglePremiumStatus() -> DBUser {
 //        let currentValue = isPremium ?? false
 //        return DBUser(
