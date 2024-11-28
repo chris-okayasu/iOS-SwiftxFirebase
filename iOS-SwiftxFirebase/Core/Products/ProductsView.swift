@@ -11,8 +11,13 @@ import SwiftUI
 @MainActor
 final class ProductsViewModel: ObservableObject{
     
+    @Published private(set) var products: [Product] = []
     
+    func getAllProducts() async throws { // populating the @Published product array
+        self.products = try await ProductManager.shared.getAllProducts()
+    }
     
+    // NOT NEEDED
     //    func downloadProductsAndUploadToFirebase() {
     //        guard let url = URL(string: "https://dummyjson.com/products") else { return }
     //
@@ -38,20 +43,25 @@ final class ProductsViewModel: ObservableObject{
 
 
 struct ProductsView: View {
-    @StateObject private var productsViewModel = ProductsViewModel()
+    @StateObject private var viewModel = ProductsViewModel()
     var body: some View {
-        ZStack{
-            Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-        }
-        .navigationTitle(
-            "Products"
-        )
-        
-        .onAppear{
-            Task{
-//                try await downloadProductsAndUploadToFirebase()
+        List {
+            ForEach(viewModel.products) { product in
+                ProductCellView(product: product)
             }
         }
+
+        .navigationTitle("Products")
+        .task{
+            try? await viewModel.getAllProducts()
+        }
+        
+        //        .onAppear{
+        //            Task{
+        //                try await downloadProductsAndUploadToFirebase()
+        //            }
+        //        }
+        
     }
     
 }
