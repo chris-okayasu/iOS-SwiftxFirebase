@@ -7,21 +7,21 @@
 
 import SwiftUI
 
-
 @MainActor
 final class ProductsViewModel: ObservableObject{
     
     @Published private(set) var products: [Product] = []
-    @Published var selectedOption: FilterOptions? = nil
-    @Published var selectedCategory: filterCategoryOption? = nil
     
-    enum FilterOptions: String, CaseIterable {
+    @Published var selectedOption: FilterOptions? = nil //for price
+    @Published var selectedCategory: filterCategoryOption? = nil // for category
+    
+    enum FilterOptions: String, CaseIterable { // price filter available, add more if needed
         case noFilter
         case priceHigh
         case pricelow
         
         var priceDescending: Bool? {
-            switch self {
+            switch self { //if no filter nil (give all the data)
             case .noFilter: return nil
             case .priceHigh: return true
             case .pricelow: return false
@@ -29,86 +29,46 @@ final class ProductsViewModel: ObservableObject{
         }
     }
     
-    enum filterCategoryOption: String, CaseIterable {
+    enum filterCategoryOption: String, CaseIterable { // add more if needed
         case all
         case smartphones
         case laptops
         case fragrances
         
+        // we can filter by nothing (nil) or by any other value
         var categoryKey: String? {
-            if self == .all { return nil }
+            if self == .all { return nil } // if all, we do not need any filter else, filter by case.rawValue
             return self.rawValue
         }
     }
-
     
-//    func getAllProducts() async throws { // populating the @Published product array
-//        self.products = try await ProductManager.shared.getAllProductsByFilters(lowPrice: nil, by: nil)
-//    }
-    
-    
-    // Query
-    // Updated UI
-    // Show Selected
+    // Filter by Price
     func filterSelectedOption(option: FilterOptions) async throws {
-//        switch option {
-//        case .noFilter:
-//            self.products = try await ProductManager.shared.getAllProductsByFilters(lowPrice: nil, by: nil)
-//            break
-//        case .priceHigh:
-//            self.products = try await ProductManager.shared.getAllProductsByFilters(lowPrice: true, by: nil)
-//            break
-//        case .pricelow:
-//            self.products = try await ProductManager.shared.getAllProductsByFilters(lowPrice: false, by: nil)
-//            break
-//        }
-        self.selectedOption = option
-        self.getProducts()
+        self.selectedOption = option //selectedOption: respective enum and returns (true, false, nil)
+        self.getProducts() //update view with the filters
     }
     
+    // Filter by Category
     func filterSelectedCategory(option: filterCategoryOption) async throws {
-//        switch option {
-//        case .all:
-//            self.products = try await ProductManager.shared.getAllProductsByFilters(lowPrice: nil, by: nil)
-//            break
-//        case .smartphones, .laptops, .fragrances:
-//            self.products = try await ProductManager.shared.getAllProductsByFilters(lowPrice: nil, by: option.rawValue)
-//            break
-//        }
-        
-        self.selectedCategory = option
-        self.getProducts()
+        self.selectedCategory = option // selectedCategory: respective enum and return (nil or string)
+        self.getProducts() //update view with the filters
     }
     
+    /// This function is running by all filters
+    /// so basically once a filter is selected, it will do 2 things
+    /// 1- select the filter, like lowPrice eq true or category Laptop or both
+    /// for each of them one the option from enum is selected it will run getProducts()
+    /// Go to ProductManager to understand how is running queries
+    /// if user use more than one filter this func will be executing more than one time also.
     func getProducts() {
         Task{
-            self.products = try await ProductManager.shared.getAllProductsByFilters(lowPrice: selectedOption?.priceDescending, by: selectedCategory?.categoryKey)
+            self.products = try await ProductManager.shared
+                .getAllProductsByFilters(
+                    lowPrice: selectedOption?.priceDescending,
+                    by: selectedCategory?.categoryKey
+                )
         }
-       
     }
-    
-    // NOT NEEDED
-    //    func downloadProductsAndUploadToFirebase() {
-    //        guard let url = URL(string: "https://dummyjson.com/products") else { return }
-    //
-    //        Task {
-    //            do {
-    //                let (data, _) = try await URLSession.shared.data(from: url)
-    //                let products = try JSONDecoder().decode(ProductArray.self, from: data)
-    //                let productArray = products.products
-    //
-    //                for product in productArray {
-    //                    try? await ProductsManager.shared.uploadProduct(product: product)
-    //                }
-    //
-    //                print("SUCCESS")
-    //                print(products.products.count)
-    //            } catch {
-    //                print(error)
-    //            }
-    //        }
-    //    }
-    
 }
 
 struct ProductsView: View {
@@ -121,6 +81,7 @@ struct ProductsView: View {
         }
         .navigationTitle("Products")
         .toolbar(content: {
+            // Price filter option
             ToolbarItem(placement: .navigationBarLeading) {
                 Menu("Filter: \(viewModel.selectedOption?.rawValue ?? "NONE")"){
                     ForEach(ProductsViewModel.FilterOptions.allCases, id: \.self) { option in
@@ -133,6 +94,7 @@ struct ProductsView: View {
                 }
             }
             
+            // Category filter option
             ToolbarItem(placement: .navigationBarTrailing) {
                 Menu("Categorty: \(viewModel.selectedCategory?.rawValue ?? "NONE")"){
                     ForEach(ProductsViewModel.filterCategoryOption.allCases, id: \.self) { option in
@@ -148,13 +110,6 @@ struct ProductsView: View {
         .onAppear{
             viewModel.getProducts()
         }
-        
-        //.onAppear{
-        //            Task{
-        //                try await downloadProductsAndUploadToFirebase()
-        //            }
-        //        }
-        
     }
 }
 
