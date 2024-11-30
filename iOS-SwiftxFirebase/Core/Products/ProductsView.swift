@@ -44,14 +44,22 @@ final class ProductsViewModel: ObservableObject{
         }
     }
     
+    private func resetPagination() {
+        self.products = [] // reset
+        self.lastDocument = nil // reset
+    }
+    
     // Filter by Price
     func filterSelectedOption(option: FilterOptions) async throws {
+        resetPagination()
         self.selectedOption = option //selectedOption: respective enum and returns (true, false, nil)
         self.getProducts() //update view with the filters
+        
     }
     
     // Filter by Category
     func filterSelectedCategory(option: filterCategoryOption) async throws {
+        resetPagination()
         self.selectedCategory = option // selectedCategory: respective enum and return (nil or string)
         self.getProducts() //update view with the filters
     }
@@ -72,7 +80,9 @@ final class ProductsViewModel: ObservableObject{
                     lastDocument: lastDocument
                 )
             self.products.append(contentsOf: newProducts)
-            self.lastDocument = lastDocument
+            if let lastDocument {
+                self.lastDocument = lastDocument                
+            }
         }
     }
     
