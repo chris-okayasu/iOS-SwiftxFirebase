@@ -29,41 +29,98 @@ final class ProductManager {
         return document
     }
     
-    private func getAllProducts() async throws -> [Product] {
-        try await productCollection.getDocumentsByType(as: Product.self)
+//    private func getAllProducts() async throws -> [Product] {
+//        try await productCollection.getDocumentsByType(as: Product.self)
+//    }
+//    
+//    private func getAllProductsSortedByPrice(descending: Bool) async throws -> [Product] {
+//        try await productCollection    //field in db
+//            .order(by: Product.CodingKeys.price.rawValue, descending: descending)
+//            .getDocumentsByType(as: Product.self)
+//    }
+//    
+//    private func getAllProductsForCategory(category: String) async throws -> [Product] {
+//        try await productCollection
+//            .whereField(Product.CodingKeys.category.rawValue, isEqualTo: category)
+//            .getDocumentsByType(as: Product.self)
+//    }
+//    
+//    private func getAllProductsByPriceAndCategory(descending: Bool, category: String) async throws -> [Product] {
+//        try await productCollection    //field in db
+//            .whereField(Product.CodingKeys.category.rawValue, isEqualTo: category)
+//            .order(by: Product.CodingKeys.price.rawValue, descending: descending)
+//            .getDocumentsByType(as: Product.self)
+//    }
+    
+    
+    private func getAllProducts() -> Query {
+        productCollection
     }
     
-    private func getAllProductsSortedByPrice(descending: Bool) async throws -> [Product] {
-        try await productCollection    //field in db
+    private func getAllProductsSortedByPrice(descending: Bool) -> Query {
+       productCollection    //field in db
             .order(by: Product.CodingKeys.price.rawValue, descending: descending)
-            .getDocumentsByType(as: Product.self)
+            
     }
     
-    private func getAllProductsForCategory(category: String) async throws -> [Product] {
-        try await productCollection
+    private func getAllProductsForCategory(category: String) -> Query {
+         productCollection
             .whereField(Product.CodingKeys.category.rawValue, isEqualTo: category)
-            .getDocumentsByType(as: Product.self)
+          
     }
     
-    private func getAllProductsByPriceAndCategory(descending: Bool, category: String) async throws -> [Product] {
-        try await productCollection    //field in db
+    private func getAllProductsByPriceAndCategory(descending: Bool, category: String) -> Query {
+        productCollection
             .whereField(Product.CodingKeys.category.rawValue, isEqualTo: category)
             .order(by: Product.CodingKeys.price.rawValue, descending: descending)
-            .getDocumentsByType(as: Product.self)
+            
     }
     
-    func getAllProductsByFilters(lowPrice descending: Bool?, by category: String?) async throws -> [Product] {
-        if let descending, let category {
-            return try await getAllProductsByPriceAndCategory(descending: descending, category: category)
-        } else if let descending {
-            return try await getAllProductsSortedByPrice(descending: descending)
-        } else if let category {
-            return try await getAllProductsForCategory(category: category)
+    func getAllProductsByFilters (
+        lowPrice descending: Bool?, // filter
+        by category: String?, // filter
+        count: Int, // pagination
+        lastDocument: DocumentSnapshot? // product itself
+    )
+    async throws -> (
+        products: [Product], // array of documents
+        lastDocument: DocumentSnapshot? // last document from firebase
+    ){
+        var query: Query = getAllProducts()
+        
+        if let descending, let category { // true, true
+            query = getAllProductsByPriceAndCategory(
+                descending: descending,
+                category: category
+            )
+            
+        } else if let descending { // true, false
+            query = getAllProductsSortedByPrice(
+                descending: descending
+            )
+        } else if let category { // false , true
+            query =  getAllProductsForCategory(
+                category: category
+            )
         }
-        return try await getAllProducts()
+        
+        if let lastDocument {
+            return try await query
+                .limit(to: count) // how many (pagination) 10 hardcoded so far
+                .start(afterDocument: lastDocument) // if pagination already started, get the next one
+                .getDocumentsByTypeWithSnapshot(  // execute firestore query with all previows stuffs...
+                    as: Product.self
+                )
+        } else {
+            return try await query
+                .limit(to: count) // how many (pagination) 10 hardcoded so far
+                .getDocumentsByTypeWithSnapshot(  // execute firestore query with all previows stuffs...
+                    as: Product.self
+                )
+        }
     }
     
-    
+            
     func getProductsByRating(count: Int, lastDocument: DocumentSnapshot?) async throws -> (products: [Product], lastDocument: DocumentSnapshot?) {
         if let lastDocument { // because 2 or more products could have same rating
             return try await productCollection

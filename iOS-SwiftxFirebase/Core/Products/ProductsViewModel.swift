@@ -37,9 +37,12 @@ struct Product: Identifiable, Codable, Equatable {
         case thumbnail
         case images
     }
-    
-//    static func ==(lhs: Product, rhs: Product) -> Bool {
-//        return lhs.id == rhs.id
-//    }
+    /// Equatable protocol
+    /// comparing one product (left) with another product (right)
+    /// this function is from Apple.developer documentation.
+    /// lhs -> left hand side, same with right...
+    static func ==(lhs: Product, rhs: Product) -> Bool {
+        return lhs.id == rhs.id
+    }
     
 }

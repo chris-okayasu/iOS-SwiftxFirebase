@@ -64,11 +64,15 @@ final class ProductsViewModel: ObservableObject{
     /// if user use more than one filter this func will be executing more than one time also.
     func getProducts() {
         Task{
-            self.products = try await ProductManager.shared
+            let (newProducts, lastDocument)  = try await ProductManager.shared
                 .getAllProductsByFilters(
                     lowPrice: selectedOption?.priceDescending,
-                    by: selectedCategory?.categoryKey
+                    by: selectedCategory?.categoryKey,
+                    count: 10,
+                    lastDocument: lastDocument
                 )
+            self.products.append(contentsOf: newProducts)
+            self.lastDocument = lastDocument
         }
     }
     
@@ -89,6 +93,12 @@ struct ProductsView: View {
         List {
             ForEach(viewModel.products) { product in
                 ProductCellView(product: product)
+                if product == viewModel.products.last { // I can do this because of Equatable protocol
+                    ProgressView()
+                        .onAppear{
+                            viewModel.getProducts()
+                        }
+                }
             }
         }
         .navigationTitle("Products")
