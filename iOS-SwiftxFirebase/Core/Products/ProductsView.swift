@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 @MainActor
 final class ProductsViewModel: ObservableObject{
@@ -14,6 +15,7 @@ final class ProductsViewModel: ObservableObject{
     
     @Published var selectedOption: FilterOptions? = nil //for price
     @Published var selectedCategory: filterCategoryOption? = nil // for category
+    private var lastDocument: DocumentSnapshot? = nil
     
     enum FilterOptions: String, CaseIterable { // price filter available, add more if needed
         case noFilter
@@ -69,6 +71,16 @@ final class ProductsViewModel: ObservableObject{
                 )
         }
     }
+    
+    // Pagination
+    func getProductsByRating(){
+        Task {
+            let (newProducts, lastDocument) = try await ProductManager.shared.getProductsByRating(count: 3, lastDocument: lastDocument)
+            self.products.append(contentsOf: newProducts)
+            self.lastDocument = lastDocument
+        }
+    }
+    
 }
 
 struct ProductsView: View {
